@@ -1,0 +1,67 @@
+from __future__ import print_function, division
+import os
+import torch
+import pandas as pd
+from skimage import io, transform
+import numpy as np
+import matplotlib.pyplot as plt
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms, utils
+import torchvision.transforms as transforms
+import torchvision.datasets as datasets
+import torchvision.models as models
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+from torch.utils import data
+import math
+import glob
+
+data_transforms = {
+    'TRAIN' : transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+    ]),
+    'TEST' : transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+    ])
+}
+
+def load_train_val_test(data_path, valid_size=0.2, test_size=0.2):
+    train_set = datasets.ImageFolder(data_path, data_transforms['TRAIN'])
+    train_loader = torch.utils.data.DataLoader(
+        train_set,
+        batch_size=32,
+        num_workers=0,
+        shuffle=True
+    )
+    images, labels = iter(train_loader).next()
+    np_train_images = images.numpy()
+    print np_train_images.shape
+    """
+    import pdb; pdb.set_trace()
+    n_master = len(master)
+    n_val = int(math.floor(valid_size * n_master))
+    n_test = int(math.floor(test_size * n_master))
+    n_train = n_master - n_val - n_test
+    train_set, val_set, test_set = data.random_split(master, (n_train, n_val, n_test))
+    return train_set, val_set, test_set
+    """
+    return train_set
+
+def transform_train_val_test(train_set, val_set, test_set):
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=64, num_workers=0, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(val_set, batch_size=64, num_workers=0, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=64, num_workers=0, shuffle=True)
+    train_batch = next(iter(train_loader))
+    val_batch = next(iter(val_loader))
+    test_batch = next(iter(test_loader))
+    return train_batch, val_batch, test_batch 
+
+train_set = load_train_val_test('train_data', valid_size=0.2, test_size=0.2)
